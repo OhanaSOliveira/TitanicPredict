@@ -1,102 +1,100 @@
-#  TitanicPredict  
+# Titanic Predict  
 
-##  Modelo de Machine Learning para prever a sobrevivência dos passageiros do Titanic  
+## Machine Learning Model to Predict Titanic Passengers Survival  
 
-**Dados:** [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/competitions/titanic/data)  
+**Data:** [Kaggle - Titanic: Machine Learning from Disaster](https://www.kaggle.com/competitions/titanic/data)  
 
-Um dos primeiros desafios clássicos do Kaggle é o Titanic Survival Prediction, cujo objetivo é prever se um passageiro sobreviveu ou não ao acidente, com base em informações como classe, idade, sexo, valor da passagem, entre outras variáveis.  
+One of the classic Kaggle challenges is the Titanic Survival Prediction, which aims to predict whether a passenger survived the disaster based on features such as class, age, sex, fare, and other variables.  
 
-A ideia é treinar um modelo de Machine Learning utilizando os dados de treino e teste fornecidos, gerando uma classificação binária — 1 para sobreviveu, 0 para não sobreviveu.  
+The idea is to train a Machine Learning model using the provided training and test datasets, generating a binary classification — 1 for survived, 0 for did not survive.  
 
-Neste projeto, utilizei as bibliotecas NumPy, Pandas e Scikit-Learn, aplicando o modelo Random Forest Classifier para realizar as predições.  
-
----
-
-##  Etapas do Projeto  
-
-### 1. Importação e Configuração Inicial  
-Importei as bibliotecas necessárias e defini a semente (random_state=0) para padronizar os resultados e garantir reprodutibilidade.  
-Em seguida, carreguei os arquivos train.csv e test.csv obtidos no Kaggle, salvando também o identificador do passageiro PassengerId para a planilha final de submissão.  
+In this project, I used **NumPy, Pandas, and Scikit-Learn**, applying the **Random Forest Classifier** to perform predictions.  
 
 ---
 
-### 2. Análise das Variáveis  
-Foi realizada uma análise exploratória para compreender quais variáveis possuíam maior influência na sobrevivência.  
-As principais escolhidas foram:  
+## Project Steps  
 
-- **Numéricas:** Age, Fare (preço da passagem) e FamilySize (tamanho da família embarcada);  
-- **Categóricas:** Pclass (classe do ticket), Sex, Embarked (porto de embarque), Title (título extraído do nome), Cabin (número da cabine) e isAlone (indicador de quem viajava sozinho).  
-
-Busquei um equilíbrio entre **complexidade e interpretabilidade**, priorizando variáveis relevantes e com impacto direto no modelo.  
+### 1. Initial Import and Setup  
+I imported the required libraries and set the seed (`random_state=0`) to standardize results and ensure reproducibility.  
+Then, I loaded the `train.csv` and `test.csv` files from Kaggle, also saving the `PassengerId` for the final submission file.  
 
 ---
 
-##  Pré-processamento  
+### 2. Feature Analysis  
+An exploratory analysis was conducted to understand which features had the greatest influence on survival.  
+The main features selected were:  
 
-### 🔹 Extração do Título (`Title`)  
-A coluna Name continha o título do passageiro junto ao nome, separado por vírgula e ponto.  
-Foi criada uma função para **extrair o título** (ex: Mr, Miss, Mrs, Dr).  
+- **Numerical:** Age, Fare, and FamilySize (number of family members onboard);  
+- **Categorical:** Pclass (ticket class), Sex, Embarked (port of embarkation), Title (extracted from Name), Cabin, and isAlone (indicates if traveling alone).  
 
-Ajustes adicionais:
-- Substituí Mlle e Ms por Miss, e Mme por Mrs;  
-- Agrupei títulos menos comuns na categoria "Rare", incluindo:  
+I aimed for a balance between **complexity and interpretability**, prioritizing relevant features with a direct impact on the model.  
+
+---
+
+## Preprocessing  
+
+### Extraction of Title (`Title`)  
+The `Name` column contained the passenger’s title along with the name, separated by a comma and a period.  
+A function was created to **extract the title** (e.g., Mr, Miss, Mrs, Dr).  
+
+Additional adjustments:
+- Replaced Mlle and Ms with Miss, and Mme with Mrs;  
+- Grouped rare titles into a "Rare" category, including:  
   'Lady', 'Countess', 'Capt', 'Col', 'Don', 'Dr', 'Major', 'Rev', 'Sir', 'Jonkheer', 'Dona'.  
 
-### 🔹 Criação de Novas Features  
-- **FamilySize**: soma de SibSp (irmãos/cônjuges a bordo) + Parch (pais/filhos a bordo) + 1 (o próprio passageiro).  
-- **isAlone**: variável binária que indica se o passageiro estava sozinho.  
+### Creation of New Features  
+- **FamilySize**: sum of SibSp (siblings/spouses onboard) + Parch (parents/children onboard) + 1 (the passenger themselves).  
+- **isAlone**: binary variable indicating if the passenger was alone.  
 
-### 🔹 Pipeline de Pré-processamento  
-Foram criadas **pipelines separadas para variáveis numéricas e categóricas**:  
-- Numéricas: substituição de valores ausentes pela **mediana**;  
-- Categóricas: substituição pela **categoria mais frequente**, seguida de **codificação One-Hot** (OneHotEncoder).  
+### Preprocessing Pipeline  
+Separate **pipelines for numerical and categorical features** were created:  
+- Numerical: missing values replaced by the **median**;  
+- Categorical: missing values replaced by the **most frequent category**, followed by **One-Hot Encoding**.  
 
-Essas transformações são aplicadas **apenas em memória**, sem modificar os arquivos originais, garantindo consistência e reprodutibilidade.  
-
----
-
-##  Modelo de Machine Learning  
-
-Utilizei o **RandomForestClassifier**, um modelo de aprendizado em conjunto (ensemble) composto por várias árvores de decisão.  
-Cada árvore realiza previsões independentes, e o resultado final é determinado pelo voto majoritário das árvores.  
-
-**Principais parâmetros utilizados:**
-- `n_estimators=100` → número de árvores na floresta;  
-- `max_depth=None` → profundidade máxima das árvores (ilimitada);  
-- `min_samples_split=2` → número mínimo de amostras para dividir um nó;  
-- `random_state=42` → garante a reprodutibilidade dos resultados.  
-
-A avaliação foi feita com **validação cruzada (Cross-Validation)**, utilizando `StratifiedKFold` com `cv=5` divisões.  
-Essa técnica permite medir o desempenho do modelo de forma mais confiável, evitando viés causado por um único corte de treino e teste.  
+These transformations are applied **in memory only**, without modifying the original files, ensuring consistency and reproducibility.  
 
 ---
 
-##  Resultados  
+## Machine Learning Model  
 
-- **Acurácia na validação cruzada:** ~82%  
-- **Acurácia na submissão do Kaggle:** 0.77  
+I used the **RandomForestClassifier**, an ensemble learning model composed of multiple decision trees.  
+Each tree makes independent predictions, and the final result is determined by the majority vote of all trees.  
 
-Os resultados indicam uma boa capacidade de generalização do modelo, sem sinais significativos de overfitting.  
+**Key parameters used:**
+- `n_estimators=100` → number of trees in the forest;  
+- `max_depth=None` → maximum depth of the trees (unlimited);  
+- `min_samples_split=2` → minimum number of samples required to split a node;  
+- `random_state=42` → ensures reproducibility.  
 
----
-
-
-##  Aprendizados  
-
-Durante o desenvolvimento deste projeto, consolidei conhecimentos sobre:
-- Pré-processamento de dados (tratamento de nulos e codificação de variáveis categóricas);  
-- Criação e manipulação de novas features;  
-- Aplicação e avaliação de modelos de classificação supervisionada;  
-- Uso de pipelines para um fluxo de tratamento reproduzível e limpo;  
-- Entendimento prático da validação cruzada e importância da reprodutibilidade.  
+Evaluation was performed using **Cross-Validation**, specifically `StratifiedKFold` with 5 splits.  
+This technique provides a more reliable performance estimate, avoiding bias from a single train-test split.  
 
 ---
 
-##  Próximos Passos  
+## Results  
 
-- Testar outros modelos como **XGBoost**, **Logistic Regression** e **Gradient Boosting**;  
-- Otimizar hiperparâmetros com **GridSearchCV** ou **Optuna**;  
-- Implementar **interpretação do modelo** com SHAP ou LIME;  
-- Criar um **dashboard interativo** para visualização das previsões.  
+- **Cross-Validation Accuracy:** ~82%  
+- **Kaggle Submission Accuracy:** 0.77  
+
+These results indicate good generalization of the model, with no significant signs of overfitting.  
 
 ---
+
+## Learnings  
+
+During this project, I consolidated knowledge in:
+- Data preprocessing (handling missing values and encoding categorical variables);  
+- Feature engineering and manipulation;  
+- Application and evaluation of supervised classification models;  
+- Using pipelines for a clean, reproducible workflow;  
+- Practical understanding of cross-validation and the importance of reproducibility.  
+
+---
+
+## Next Steps  
+
+- Test other models such as **XGBoost**, **Logistic Regression**, and **Gradient Boosting**;  
+- Optimize hyperparameters using **GridSearchCV** or **Optuna**;  
+- Implement **model interpretation** with SHAP or LIME;  
+- Create an **interactive dashboard** to visualize predictions.  
+
